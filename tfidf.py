@@ -1,7 +1,6 @@
-from _hashlib import new
-from PorterStemmer import PorterStemmer
+from stemmer_helper import StemmerHelper
 from document import Document
-from math import log
+from math import log, pow, sqrt
 
 __author__ = 'Pawel Rychly, Dawid Wisniewski'
 
@@ -13,32 +12,30 @@ class TfIdf:
     __inverted_file = {}
     __tf = []
     __keywords = set()
+    __search_result = []
 
     def __init__(self, documents_filename, keywords_filename):
+        self.__search_result = []
         self.__init_keywords(keywords_filename)
-        self.print_stemmed_keywords()
         self.__init_documents_collection(documents_filename)
         self.__init_values()
-        self.print_idfs()
-        self.print_tfs("resourc")
+        self.rank("weka, resource")
+        self.print_result()
         return
+
+    def print_result(self):
+        print "SEARCHING RESULT"
+        for document in self.__search_result:
+            print "{0}, {1}".format(document.get_score(), document.get_title())
 
     def __init_keywords(self, keywords_filename):
         self.__documents = []
-        p = PorterStemmer()
+        #p = PorterStemmer()
         file = open(keywords_filename)
         try:
             line = file.readline()
             while line:
-                word = ''
-                stemmed_word = ''
-                for c in line:
-                    if c.isalpha():
-                        word += c.lower()
-                    else:
-                        if word:
-                            stemmed_word += p.stem(word, 0,len(word)-1)
-                            word = ''
+                stemmed_word = StemmerHelper.stem_text(line)
                 if len(stemmed_word) > 0:
                     self.__keywords.add(stemmed_word)
                 line = file.readline()
@@ -84,30 +81,24 @@ class TfIdf:
             if self.__tf[id].has_key(term):
                 print "{0} : tf  {1}: {2}".format(id, term, self.__tf[id][term])
 
-    #def get_tf(self, term, doc_id):
-    #    try:
-    #        freq = self.tf[doc_id][doc_id]
-    #    except:
-    #        return 0
-    #    return freq
-
     def print_documents(self):
         for index, document in enumerate(self.__documents):
             print "doc title {0}:\n {1}".format(index, document.get_title())
             print "doc stemmed {0}:\n {1}".format(index, document.get_stemmed_document())
 
-    def __get_tf(self, document):
+    def __get_tf(self, text):
         term_freqs = {}
         max = 0.0
-        terms = document.get_stemmed_document().split()
+        terms = text.split()
         for term in terms:
-            count = 1.0;
-            if term_freqs.has_key(term):
-                count = term_freqs[term]
-                count += 1.0
-            term_freqs[term] = count
-            if count > max:
-                max = count
+            if term in self.__keywords:
+                count = 1.0;
+                if term_freqs.has_key(term):
+                    count = term_freqs[term]
+                    count += 1.0
+                term_freqs[term] = count
+                if count > max:
+                    max = count
 
         for term, value in term_freqs.iteritems():
             term_freqs[term] = value/max
@@ -122,7 +113,7 @@ class TfIdf:
     def __init_values(self):
         document_id = 0
         for document in self.__documents:
-            term_freqs = self.__get_tf(document)
+            term_freqs = self.__get_tf(document.get_stemmed_document())
             self.__tf.append(term_freqs)
             for term in term_freqs.keys():
                 ids = set()
@@ -140,7 +131,63 @@ class TfIdf:
                 idf = log(number_of_all_documents / number_of_documents_with_term)
             self.__idfs[term] = idf
 
+    def rank(self, query):
+        query = StemmerHelper.stem_text(query)
+        term_freqs = self.__get_tf(query)
+        query_vector = {}
+        for term, tf in term_freqs.iteritems():
+            tfidf = tf * self.__idfs[term]
+            print "{0} tf {1} : idf {2} : {3}".format(term, tf, self.__idfs[term], tfidf )
+            query_vector[term] = tfidf
+
+        union = set()
+        for term in term_freqs.keys():
+            union = union | self.__inverted_file[term]
+        scores = []
+        for id in union:
+            scores.append({'id': id, 'score': self.__similarity(query_vector, self.__get_document_vector(id))})
+
+        sorted_scores = sorted(scores, key=lambda k: k['score'], reverse=True)
+        self.__search_result = []
+        for score in sorted_scores:
+            document = self.__documents[score['id']]
+            document.set_score(score['score'])
+            self.__search_result.append(document)
+
+        return self.__search_result
+
+
+
+    def __get_document_vector(self, document_id):
+        if document_id < len(self.__tf):
+            vector = {}
+            term_freqs = self.__tf[document_id]
+            for term, tf in term_freqs.iteritems():
+                tfidf = tf * self.__idfs[term]
+                vector[term] = tfidf
+        return vector
+
+    def __similarity(self, vector_a, vector_b):
+        sum = 0.0
+        for term, tfidf_a in vector_a.iteritems():
+            if vector_b.has_key(term):
+                tfidf_b = vector_b[term]
+                sum += tfidf_a * tfidf_b
+
+        t = self.__vector_length(vector_a) * self.__vector_length(vector_b)
+        result = 0.0
+        if t != 0.0:
+            result = sum / t
+        return result
+
+    def __vector_length(self, vector):
+        sum = 0.0
+        for term, value in vector.iteritems():
+            sum += pow(value, 2)
+        l = sqrt(sum)
+        return l
+
 tfidf = TfIdf("data//documents.txt", "data//keywords.txt")
-#tfidf.print_documents()
+
 
 
