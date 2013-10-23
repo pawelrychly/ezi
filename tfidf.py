@@ -17,6 +17,8 @@ class TfIdf:
         self.__init_documents_collection(filename)
         self.__init_values()
         self.print_idfs()
+        self.print_tfs("resourc")
+
         return
 
     def __init_documents_collection(self, filename):
@@ -44,8 +46,12 @@ class TfIdf:
 
     def print_idfs(self):
         for term, idf in self.__idfs.iteritems():
-            print "{0}: {1}".format(term, idf)
+            print "idf {0}: {1}".format(term, idf)
 
+    def print_tfs(self, term):
+        for id, document in enumerate(self.__documents):
+            if self.__tf[id].has_key(term):
+                print "{0} : tf  {1}: {2}".format(id, term, self.__tf[id][term])
 
     #def get_tf(self, term, doc_id):
     #    try:
@@ -61,13 +67,13 @@ class TfIdf:
 
     def __get_tf(self, document):
         term_freqs = {}
-        max = 0
+        max = 0.0
         terms = document.get_stemmed_document().split()
         for term in terms:
-            count = 1;
+            count = 1.0;
             if term_freqs.has_key(term):
                 count = term_freqs[term]
-                count += 1
+                count += 1.0
             term_freqs[term] = count
             if count > max:
                 max = count
