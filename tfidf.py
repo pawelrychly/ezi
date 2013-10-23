@@ -12,18 +12,49 @@ class TfIdf:
     __idfs = {}
     __inverted_file = {}
     __tf = []
+    __keywords = set()
 
-    def __init__(self, filename):
-        self.__init_documents_collection(filename)
+    def __init__(self, documents_filename, keywords_filename):
+        self.__init_keywords(keywords_filename)
+        self.print_stemmed_keywords()
+        self.__init_documents_collection(documents_filename)
         self.__init_values()
         self.print_idfs()
         self.print_tfs("resourc")
-
         return
 
-    def __init_documents_collection(self, filename):
+    def __init_keywords(self, keywords_filename):
         self.__documents = []
-        file = open(filename)
+        p = PorterStemmer()
+        file = open(keywords_filename)
+        try:
+            line = file.readline()
+            while line:
+                word = ''
+                stemmed_word = ''
+                for c in line:
+                    if c.isalpha():
+                        word += c.lower()
+                    else:
+                        if word:
+                            stemmed_word += p.stem(word, 0,len(word)-1)
+                            word = ''
+                if len(stemmed_word) > 0:
+                    self.__keywords.add(stemmed_word)
+                line = file.readline()
+        except IOError:
+            print "Error: can\'t find keywords file or read data"
+        finally:
+            file.close()
+        return
+
+    def print_stemmed_keywords(self):
+        for word in self.__keywords:
+            print word
+
+    def __init_documents_collection(self, documents_filename):
+        self.__documents = []
+        file = open(documents_filename)
         try:
             title = ''
             line = file.readline()
@@ -39,7 +70,7 @@ class TfIdf:
                     self.__documents.append(document)
                 line = file.readline()
         except IOError:
-            print "Error: can\'t find file or read data"
+            print "Error: can\'t find documents file or read data"
         finally:
             file.close()
         return
@@ -109,7 +140,7 @@ class TfIdf:
                 idf = log(number_of_all_documents / number_of_documents_with_term)
             self.__idfs[term] = idf
 
-tfidf = TfIdf("data//documents.txt")
+tfidf = TfIdf("data//documents.txt", "data//keywords.txt")
 #tfidf.print_documents()
 
 
