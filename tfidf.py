@@ -19,14 +19,20 @@ class TfIdf:
         self.__init_keywords(keywords_filename)
         self.__init_documents_collection(documents_filename)
         self.__init_values()
-        self.rank("weka, resource")
-        self.print_result()
+        #self.rank("weka, resource")
+        #self.print_result()
         return
 
     def print_result(self):
         print "SEARCHING RESULT"
         for document in self.__search_result:
             print "{0}, {1}".format(document.get_score(), document.get_title())
+
+    def get_result(self):
+        data = []
+        for document in self.__search_result:
+            data.append("{0}, {1}".format(document.get_score(), document.get_title()))
+        return "\r\n".join(data)
 
     def __init_keywords(self, keywords_filename):
         self.__documents = []
