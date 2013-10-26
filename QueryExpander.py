@@ -46,6 +46,6 @@ class QueryExpander:
 		return best_keyword
 
 qe = QueryExpander()
-qe.loadKeywords('./data/keywords.txt')
+qe.loadKeywords('./data/keywords-2.txt')
 
 qe.expand(sys.argv[1])
