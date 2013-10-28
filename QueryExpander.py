@@ -7,7 +7,6 @@ from nltk import wordnet as wn
 
 class QueryExpander:
 	def expand(self, query):
-		query_candidates = [] #list of candidate queries after expansion
 		query = query.replace('(,|\.|\n)', '') #remove dots, commas and newlines
 		query_parts = query.split() #split on whitespaces to obtain token list
 		
@@ -31,7 +30,6 @@ class QueryExpander:
 			print 'Cannot find word: ', query_word, 'in wordnet!' 
 			return ''
 
-
 		#find word that is closest to our query word 
 		best_similarity = 0.0
 		best_keyword    = '';
@@ -40,6 +38,8 @@ class QueryExpander:
 			if len(self.keywords[keyword]) > 0: # if contains some data in wordnet
 				if self.keywords[keyword][0].pos == synsets[0].pos and keyword != query_word: #if keyword is in wordnet and with the same postag
 					similarity = synsets[0].lch_similarity(self.keywords[keyword][0])
+				
+					print similarity, synsets[0].lemmas[0], self.keywords[keyword][0].lemmas[0]
 					if similarity > best_similarity:
 						best_similarity = similarity
 						best_keyword = keyword
