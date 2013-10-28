@@ -16,6 +16,10 @@ class TfIdf:
 
     def __init__(self, documents_filename, keywords_filename):
         self.__search_result = []
+        self.__keywords = set()
+        self.__search_result = []
+        self.__tf = []
+        self.__documents = []
         self.__init_keywords(keywords_filename)
         self.__init_documents_collection(documents_filename)
         self.__init_values()
@@ -28,6 +32,9 @@ class TfIdf:
         for document in self.__search_result:
             print "{0}, {1}".format(document.get_score(), document.get_title())
 
+    def get_keywords_string(self):
+        return "\r\n".join(self.__keywords)
+
     def get_result(self):
         data = []
         for document in self.__search_result:
@@ -35,6 +42,7 @@ class TfIdf:
         return "\r\n".join(data)
 
     def __init_keywords(self, keywords_filename):
+        print keywords_filename
         self.__documents = []
         #p = PorterStemmer()
         file = open(keywords_filename)
@@ -142,13 +150,17 @@ class TfIdf:
         term_freqs = self.__get_tf(query)
         query_vector = {}
         for term, tf in term_freqs.iteritems():
-            tfidf = tf * self.__idfs[term]
-            print "{0} tf {1} : idf {2} : {3}".format(term, tf, self.__idfs[term], tfidf )
+            idf = 0.0
+            if self.__idfs.has_key(term):
+                idf = self.__idfs[term]
+            tfidf = tf * idf
+            print "{0} tf {1} : idf {2} : {3}".format(term, tf, idf, tfidf )
             query_vector[term] = tfidf
 
         union = set()
         for term in term_freqs.keys():
-            union = union | self.__inverted_file[term]
+            if self.__inverted_file.has_key(term):
+                union = union | self.__inverted_file[term]
         scores = []
         for id in union:
             scores.append({'id': id, 'score': self.__similarity(query_vector, self.__get_document_vector(id))})
