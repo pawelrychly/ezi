@@ -20,6 +20,10 @@ class GUI:
         gtk.main_quit()
         return False
 
+    def show_keywords(self):
+        self.keywords_area.get_buffer().set_text(self.tfidf.get_keywords_string())
+
+
     def open_file(self, widget,  name):
         text = "Select {0} Source File".format(name)
         filechooserdialog = gtk.FileChooserDialog(text, None, gtk.FILE_CHOOSER_ACTION_OPEN, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OK, gtk.RESPONSE_OK))
@@ -29,6 +33,8 @@ class GUI:
             self.__directories[name] = filechooserdialog.get_filename()
             self.tfidf = TfIdf(self.__directories['Documents'], self.__directories['Keywords'])
             print self.__directories
+            self.tfidf.print_stemmed_keywords()
+            self.show_keywords()
 
         filechooserdialog.destroy()
 
@@ -38,7 +44,7 @@ class GUI:
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
         self.window.set_title("Czesc Milosz!")
         self.window.connect("delete_event", self.delete_event)
-        self.window.set_default_size(400,100)
+        self.window.set_default_size(600,500)
         self.window.set_border_width(5)
         
         #prepare layout
@@ -47,8 +53,10 @@ class GUI:
 
         self.box1.pack_start(self.get_menu_box(), False, False, 0)
         self.box1.pack_start(self.get_search_panel_layout(), False, False, 0)
-
         self.box1.pack_start(self.get_result_layaut(), True, True, 0)
+        self.box1.pack_start(self.get_keywords_layout(), True, True, 0)
+        self.show_keywords()
+        self.tfidf.print_stemmed_keywords()
         self.window.show_all()
 
     def get_menu_box(self):
@@ -89,21 +97,35 @@ class GUI:
     def get_result_layaut(self):
         #prepare text area for results
         self.text_area = gtk.TextView()
-        self.text_area_layout = gtk.Layout()
-        self.text_area_layout.set_size(800, 400)
-        self.text_area_layout.put(self.text_area, 0, 0)
+        sw = gtk.ScrolledWindow()
+        sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        self.text_area = gtk.TextView()
+        sw.add(self.text_area)
+        return sw
 
-        vadjust = self.text_area_layout.get_vadjustment()
-        hadjust = self.text_area_layout.get_hadjustment()
+     #def get_keywords_layout(self):
+        #prepare text area for results
+     #   box = gtk.VBox(False, 2)
+     #   label = gtk.Label("Keywords:")
+     #   box.pack_start(label, False, False, 0)
+     #   sw = gtk.ScrolledWindow()
+     #   sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+     #   self.keywords_area = gtk.TextView()
+     #   sw.add(self.keywords_area)
+     #   box.pack_start(sw, )
+     #   return box
 
-        vscroll = gtk.VScrollbar(vadjust)
-        hscroll = gtk.HScrollbar(hadjust)
-
-        table = gtk.Table(2, 2, False)
-        table.attach(self.text_area_layout, 0, 1, 0, 1, gtk.FILL | gtk.EXPAND, gtk.FILL | gtk.EXPAND)
-        table.attach(vscroll, 1, 2, 0, 1, gtk.FILL | gtk.SHRINK, gtk.FILL | gtk.SHRINK)
-        table.attach(hscroll, 0, 1, 1, 2, gtk.FILL | gtk.SHRINK, gtk.FILL | gtk.SHRINK)
-        return table
+    def get_keywords_layout(self):
+        #prepare text area for results
+        #box = gtk.VBox(False, 2)
+        #label = gtk.Label("Keywords:")
+        #box.pack_start(label, False, False, 0)
+        sw = gtk.ScrolledWindow()
+        sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        self.keywords_area = gtk.TextView()
+        sw.add(self.keywords_area)
+        #box.pack_start(sw, )
+        return sw
 
 
 def main():
