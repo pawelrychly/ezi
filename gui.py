@@ -4,6 +4,8 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 from tfidf import TfIdf
+from results_view import ResultView
+
 class GUI:
 
     __directories = {
@@ -13,8 +15,9 @@ class GUI:
 
     def do_search(self, widget, data):
         query = self.entry.get_text()
-        self.tfidf.rank(query)
-        self.text_area.get_buffer().set_text(self.tfidf.get_result())
+        result = self.tfidf.rank(query)
+        self.result_view.show_documents(result)
+        #self.text_area.get_buffer().set_text(self.tfidf.get_result())
         
     def delete_event(self, widget, event, data=None):
         gtk.main_quit()
@@ -50,10 +53,11 @@ class GUI:
         #prepare layout
         self.box1 = gtk.VBox(False, 5)
         self.window.add(self.box1)
-
+        document_view = self.get_document_textarea_layout()
         self.box1.pack_start(self.get_menu_box(), False, False, 0)
         self.box1.pack_start(self.get_search_panel_layout(), False, False, 0)
         self.box1.pack_start(self.get_result_layaut(), True, True, 0)
+        self.box1.pack_start(document_view, True, True, 0)
         self.box1.pack_start(self.get_keywords_layout(), True, True, 0)
         self.show_keywords()
         self.tfidf.print_stemmed_keywords()
@@ -95,37 +99,46 @@ class GUI:
         return hbox
 
     def get_result_layaut(self):
-        #prepare text area for results
-        self.text_area = gtk.TextView()
         sw = gtk.ScrolledWindow()
         sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        self.text_area = gtk.TextView()
-        sw.add(self.text_area)
+        self.result_view = ResultView(self.document_area)
+        sw.add_with_viewport(self.result_view)
+
+        #prepare text area for results
+        #self.text_area = gtk.TextView()
+        #sw = gtk.ScrolledWindow()
+        #sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        #self.text_area = gtk.TextView()
+        #sw.add(self.text_area)
         return sw
 
-     #def get_keywords_layout(self):
+    #def get_bottomarea_layout(self):
+        #bottom = gtk.HBox(False, 0)
+        #bottom.pack_start(self.get_document_textarea_layout(), False, False, 0)
+        #bottom.pack_start(self.get_keywords_layout(), False, False, 0)
+        #return bottom
+
+    def get_document_textarea_layout(self):
         #prepare text area for results
-     #   box = gtk.VBox(False, 2)
-     #   label = gtk.Label("Keywords:")
-     #   box.pack_start(label, False, False, 0)
-     #   sw = gtk.ScrolledWindow()
-     #   sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-     #   self.keywords_area = gtk.TextView()
-     #   sw.add(self.keywords_area)
-     #   box.pack_start(sw, )
-     #   return box
+        frame = gtk.Frame()
+        sw = gtk.ScrolledWindow()
+        sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        self.document_area = gtk.TextView()
+        sw.add(self.document_area)
+        frame.set_label("Document:")
+        frame.add(sw)
+        return frame
 
     def get_keywords_layout(self):
         #prepare text area for results
-        #box = gtk.VBox(False, 2)
-        #label = gtk.Label("Keywords:")
-        #box.pack_start(label, False, False, 0)
+        frame = gtk.Frame()
         sw = gtk.ScrolledWindow()
         sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
         self.keywords_area = gtk.TextView()
         sw.add(self.keywords_area)
-        #box.pack_start(sw, )
-        return sw
+        frame.set_label("Keywords:")
+        frame.add(sw)
+        return frame
 
 
 def main():
