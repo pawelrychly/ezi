@@ -15,6 +15,7 @@ class TfIdf:
     __search_result = []
 
     def __init__(self, documents_filename, keywords_filename):
+        self.__inverted_file = {}
         self.__search_result = []
         self.__keywords = set()
         self.__search_result = []
@@ -65,6 +66,7 @@ class TfIdf:
 
     def __init_documents_collection(self, documents_filename):
         self.__documents = []
+        print "documents filename: {0}".format(documents_filename)
         file = open(documents_filename)
         try:
             title = ''
@@ -74,7 +76,7 @@ class TfIdf:
                 if title == '':
                     title = line
                 text += line + ' '
-                if len(line) == 1:
+                if line and line.isspace():
                     document = Document(title, text)
                     text = ''
                     title = ''
@@ -126,6 +128,7 @@ class TfIdf:
 
     def __init_values(self):
         document_id = 0
+
         for document in self.__documents:
             term_freqs = self.__get_tf(document.get_stemmed_document())
             self.__tf.append(term_freqs)
@@ -141,8 +144,12 @@ class TfIdf:
             number_of_documents_with_term = len(document_ids)
             number_of_all_documents = len(self.__documents)
             idf = 0.0
-            if number_of_documents_with_term != 0.0:
-                idf = log(number_of_all_documents / number_of_documents_with_term)
+
+
+            if not (number_of_documents_with_term == 0):
+                #print "num of all docs {0}".format(number_of_all_documents)
+                #print "num of docs with term {0}".format(number_of_documents_with_term)
+                idf = log(float(number_of_all_documents) / float(number_of_documents_with_term))
             self.__idfs[term] = idf
 
     def rank(self, query):
@@ -193,6 +200,9 @@ class TfIdf:
                 sum += tfidf_a * tfidf_b
 
         t = self.__vector_length(vector_a) * self.__vector_length(vector_b)
+        print self.__vector_length(vector_a)
+        print self.__vector_length(vector_b)
+        print "t: {0}".format(t)
         result = 0.0
         if t != 0.0:
             result = sum / t

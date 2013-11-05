@@ -2,9 +2,11 @@
 
 import pygtk
 pygtk.require('2.0')
+#pygtk.require('2.0')
 import gtk
 from tfidf import TfIdf
 from results_view import ResultView
+
 
 class GUI:
 
@@ -35,8 +37,9 @@ class GUI:
         if response == gtk.RESPONSE_OK:
             self.__directories[name] = filechooserdialog.get_filename()
             self.tfidf = TfIdf(self.__directories['Documents'], self.__directories['Keywords'])
+            print "directories"
             print self.__directories
-            self.tfidf.print_stemmed_keywords()
+            #self.tfidf.print_stemmed_keywords()
             self.show_keywords()
 
         filechooserdialog.destroy()
@@ -60,7 +63,7 @@ class GUI:
         self.box1.pack_start(document_view, True, True, 0)
         self.box1.pack_start(self.get_keywords_layout(), True, True, 0)
         self.show_keywords()
-        self.tfidf.print_stemmed_keywords()
+        #self.tfidf.print_stemmed_keywords()
         self.window.show_all()
 
     def get_menu_box(self):
