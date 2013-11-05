@@ -2,6 +2,7 @@
 
 import pygtk
 pygtk.require('2.0')
+
 #pygtk.require('2.0')
 import gtk
 from tfidf import TfIdf
@@ -45,7 +46,9 @@ class GUI:
         filechooserdialog.destroy()
 
     def __init__(self):
+
         #inits window and connects delete event
+        print gtk.pygtk_version
         self.tfidf = TfIdf(self.__directories['Documents'], self.__directories['Keywords'])
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
         self.window.set_title("Czesc Milosz!")
@@ -94,6 +97,20 @@ class GUI:
         #prepare layout
         hbox = gtk.HBox(False, 5)
         self.entry = gtk.Entry()
+
+        self.similar_list = ["Ubuntu", "Debian", "Sabayon", "Fedora", "Arch", "Mint", "Slackware", "Mandriva", "Sidux", "Mepis"]
+        completion = gtk.EntryCompletion()
+        self.liststore = gtk.ListStore(str)
+
+        self.entry.set_completion(completion)
+        completion.set_model(self.liststore)
+        completion.set_text_column(0)
+
+        for item in self.similar_list:
+            self.liststore.append([item])
+
+
+
         hbox.pack_start(self.entry, True, True, 0)
         #prepare search button
         btn_search = gtk.Button("Szukaj")
