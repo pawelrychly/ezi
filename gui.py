@@ -44,6 +44,7 @@ class GUI:
     def __init__(self):
         #inits window and connects delete event
         self.tfidf = TfIdf(self.__directories['Documents'], self.__directories['Keywords'])
+        print 'Dokument', self.tfidf.print_documents()
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
         self.window.set_title("Czesc Milosz!")
         self.window.connect("delete_event", self.delete_event)

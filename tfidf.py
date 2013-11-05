@@ -71,6 +71,7 @@ class TfIdf:
             line = file.readline()
             text = ''
             while line:
+                print line
                 if title == '':
                     title = line
                 text += line + ' '
@@ -142,7 +143,7 @@ class TfIdf:
             number_of_all_documents = len(self.__documents)
             idf = 0.0
             if number_of_documents_with_term != 0.0:
-                idf = log(number_of_all_documents / number_of_documents_with_term)
+                idf = log(float(number_of_all_documents) / float(number_of_documents_with_term))
             self.__idfs[term] = idf
 
     def rank(self, query):
@@ -205,7 +206,7 @@ class TfIdf:
         l = sqrt(sum)
         return l
 
-tfidf = TfIdf("data//documents.txt", "data//keywords.txt")
+#tfidf = TfIdf("data//documents.txt", "data//keywords.txt")
 
 
 

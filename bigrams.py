@@ -45,14 +45,12 @@ class QueryExpander:
 		return trimmed
 
 	def expand(self, query_word):
-		files_list =  os.listdir('./dat')
+		files_list =  os.listdir('./data')
 		result_dict = dict()
 		for f in files_list:
-			trimmed = self.getBigramsCount('./dat/'+f, 'stoplist')
+			trimmed = self.getBigramsCount('./data/'+f, 'stoplist')
 			result_dict = dict(result_dict.items() + trimmed.items())
 
-		#for (a,b) in result_dict:
-		#	print (a,b), result_dict[(a,b)]
 		for (a,b) in result_dict:
 			if a == query_word or b == query_word:
 				print a, b, result_dict[(a,b)]
