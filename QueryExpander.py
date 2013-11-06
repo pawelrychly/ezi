@@ -66,9 +66,9 @@ class QueryExpander:
 						best_keyword = keyword
 		return best_keyword
 
-qe = QueryExpander()
-qe.loadKeywords('./data/keywords-2.txt')
+#qe = QueryExpander()
+#qe.loadKeywords('./data/keywords-2.txt')
 
-result = qe.expand(sys.argv[1])
-for item in result:
-	print item
+#result = qe.expand(sys.argv[1])
+#for item in result:
+#	print item

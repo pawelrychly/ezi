@@ -8,6 +8,8 @@ import gtk
 from tfidf import TfIdf
 from results_view import ResultView
 from query_expander_view import QueryExpanderView
+from QueryExpander import QueryExpander
+import nltk
 
 
 class GUI:
@@ -22,7 +24,11 @@ class GUI:
         result = self.tfidf.rank(query)
         self.result_view.show_documents(result)
         if self.is_query_expanding_active:
-            self.query_expander.show_queries(["Example1", "Example2", "Inne zapytanie", "Jeszcze inne zapytanie", "Inne...."])
+            new_queries = self.query_expander.expand(query)
+            list = []
+            for new_query in new_queries:
+                list.append(" ".join(new_query))
+            self.query_expander_view.show_queries(list)
 
         #self.text_area.get_buffer().set_text(self.tfidf.get_result())
         
@@ -49,6 +55,8 @@ class GUI:
         if response == gtk.RESPONSE_OK:
             self.__directories[name] = filechooserdialog.get_filename()
             self.tfidf = TfIdf(self.__directories['Documents'], self.__directories['Keywords'])
+            self.query_expander = QueryExpander()
+            self.query_expander.loadKeywords(self.__directories['Keywords'])
             print "directories"
             print self.__directories
             #self.tfidf.print_stemmed_keywords()
@@ -57,7 +65,8 @@ class GUI:
         filechooserdialog.destroy()
 
     def __init__(self):
-
+        self.query_expander = QueryExpander()
+        self.query_expander.loadKeywords(self.__directories['Keywords'])
         #inits window and connects delete event
         print gtk.pygtk_version
         self.is_query_expanding_active = True
@@ -91,8 +100,8 @@ class GUI:
         box.pack_start(check_box, False, False, 0)
         self.query_expander_container = gtk.ScrolledWindow()
         self.query_expander_container.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        self.query_expander = QueryExpanderView(self.entry)
-        self.query_expander_container.add_with_viewport(self.query_expander)
+        self.query_expander_view = QueryExpanderView(self.entry)
+        self.query_expander_container.add_with_viewport(self.query_expander_view)
         box.pack_start(self.query_expander_container, True, True, 0)
 
         return box
