@@ -7,16 +7,18 @@ from tfidf import TfIdf
 
 class QueryExpanderView(gtk.VButtonBox):
 
-    def __init__(self, entry):
+    def __init__(self, main_gui):
         super(QueryExpanderView, self).__init__()
+        self.main_gui = main_gui
         self.__all_buttons = []
         self.queries = []
-        self.entry = entry
+        self.entry = main_gui.entry
         self.tooltips = gtk.Tooltips()
         self.set_layout(gtk.BUTTONBOX_START)
 
     def chose_query(self, widget, query):
         self.entry.set_text(query)
+        self.main_gui.do_search(widget, "")
 
     def append_query(self, query):
         title = query

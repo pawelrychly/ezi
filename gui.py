@@ -27,7 +27,8 @@ class GUI:
             new_queries = self.query_expander.expand(query)
             list = []
             for new_query in new_queries:
-                list.append(" ".join(new_query))
+                if len(new_query) >= 1:
+                    list.append(" ".join(new_query))
             self.query_expander_view.show_queries(list)
 
         #self.text_area.get_buffer().set_text(self.tfidf.get_result())
@@ -45,6 +46,7 @@ class GUI:
             self.query_expander_container.show()
         else:
             self.query_expander_container.hide()
+            self.query_expander_view.remove_old_buttons()
         print self.is_query_expanding_active
 
     def open_file(self, widget,  name):
@@ -100,7 +102,7 @@ class GUI:
         box.pack_start(check_box, False, False, 0)
         self.query_expander_container = gtk.ScrolledWindow()
         self.query_expander_container.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        self.query_expander_view = QueryExpanderView(self.entry)
+        self.query_expander_view = QueryExpanderView(self)
         self.query_expander_container.add_with_viewport(self.query_expander_view)
         box.pack_start(self.query_expander_container, True, True, 0)
 
