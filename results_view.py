@@ -9,9 +9,11 @@ class ResultView(gtk.VButtonBox):
 
     def __init__(self, textarea):
         super(ResultView, self).__init__()
+
         self.__all_buttons = []
         self.document_textarea = textarea
         self.tooltips = gtk.Tooltips()
+        self.set_layout(gtk.BUTTONBOX_START)
 
     def show_document(self, widget,  document):
         self.document_textarea.get_buffer().set_text(document.get_stemmed_document())
@@ -20,6 +22,7 @@ class ResultView(gtk.VButtonBox):
         title = "{0}    {1}".format(document.get_score(), document.get_title())
         button = gtk.Button(title)
         button.connect("clicked", self.show_document, document)
+        #button.set_alignment(z)
         self.pack_start(button, gtk.TRUE, gtk.TRUE, 0)
         self.tooltips.set_tip(button, "Nacisnij aby zobaczyc zawartosc")
         self.__all_buttons.append(button)
