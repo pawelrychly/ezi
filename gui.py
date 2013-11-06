@@ -62,6 +62,7 @@ class GUI:
         print gtk.pygtk_version
         self.is_query_expanding_active = True
         self.tfidf = TfIdf(self.__directories['Documents'], self.__directories['Keywords'])
+        print 'Dokument', self.tfidf.print_documents()
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
         self.window.set_title("Czesc Milosz!")
         self.window.connect("delete_event", self.delete_event)

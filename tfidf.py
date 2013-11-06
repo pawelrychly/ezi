@@ -73,6 +73,7 @@ class TfIdf:
             line = file.readline()
             text = ''
             while line:
+                print line
                 if title == '':
                     title = line
                 text += line + ' '
@@ -215,7 +216,7 @@ class TfIdf:
         l = sqrt(sum)
         return l
 
-tfidf = TfIdf("data//documents.txt", "data//keywords.txt")
+#tfidf = TfIdf("data//documents.txt", "data//keywords.txt")
 
 
 
