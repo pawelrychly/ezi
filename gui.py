@@ -7,19 +7,30 @@ pygtk.require('2.0')
 import gtk
 from tfidf import TfIdf
 from results_view import ResultView
+from query_expander_view import QueryExpanderView
+from QueryExpander import QueryExpander
+import nltk
 
 
 class GUI:
 
     __directories = {
-        "Documents": "data//documents.txt",
-        "Keywords": "data//keywords.txt"
+        "Documents": "data//documents-lab1.txt",
+        "Keywords": "data//keywords-lab1.txt"
     }
 
     def do_search(self, widget, data):
         query = self.entry.get_text()
         result = self.tfidf.rank(query)
         self.result_view.show_documents(result)
+        if self.is_query_expanding_active:
+            new_queries = self.query_expander.expand(query)
+            list = []
+            for new_query in new_queries:
+                if len(new_query) >= 1:
+                    list.append(" ".join(new_query))
+            self.query_expander_view.show_queries(list)
+
         #self.text_area.get_buffer().set_text(self.tfidf.get_result())
         
     def delete_event(self, widget, event, data=None):
@@ -29,6 +40,14 @@ class GUI:
     def show_keywords(self):
         self.keywords_area.get_buffer().set_text(self.tfidf.get_keywords_string())
 
+    def toggle_query_expanding(self, widget):
+        self.is_query_expanding_active = not self.is_query_expanding_active
+        if self.is_query_expanding_active:
+            self.query_expander_container.show()
+        else:
+            self.query_expander_container.hide()
+            self.query_expander_view.remove_old_buttons()
+        print self.is_query_expanding_active
 
     def open_file(self, widget,  name):
         text = "Select {0} Source File".format(name)
@@ -38,6 +57,8 @@ class GUI:
         if response == gtk.RESPONSE_OK:
             self.__directories[name] = filechooserdialog.get_filename()
             self.tfidf = TfIdf(self.__directories['Documents'], self.__directories['Keywords'])
+            self.query_expander = QueryExpander()
+            self.query_expander.loadKeywords(self.__directories['Keywords'])
             print "directories"
             print self.__directories
             #self.tfidf.print_stemmed_keywords()
@@ -46,9 +67,11 @@ class GUI:
         filechooserdialog.destroy()
 
     def __init__(self):
-
+        self.query_expander = QueryExpander()
+        self.query_expander.loadKeywords(self.__directories['Keywords'])
         #inits window and connects delete event
         print gtk.pygtk_version
+        self.is_query_expanding_active = True
         self.tfidf = TfIdf(self.__directories['Documents'], self.__directories['Keywords'])
         print 'Dokument', self.tfidf.print_documents()
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
@@ -63,12 +86,27 @@ class GUI:
         document_view = self.get_document_textarea_layout()
         self.box1.pack_start(self.get_menu_box(), False, False, 0)
         self.box1.pack_start(self.get_search_panel_layout(), False, False, 0)
+        self.box1.pack_start(self.get_query_expander_view(), True, True, 0)
         self.box1.pack_start(self.get_result_layaut(), True, True, 0)
         self.box1.pack_start(document_view, True, True, 0)
         self.box1.pack_start(self.get_keywords_layout(), True, True, 0)
         self.show_keywords()
         #self.tfidf.print_stemmed_keywords()
         self.window.show_all()
+
+    def get_query_expander_view(self):
+        box = gtk.VBox()
+        check_box = gtk.CheckButton("Query Expanding")
+        check_box.set_active(True)
+        check_box.connect("clicked", self.toggle_query_expanding)
+        box.pack_start(check_box, False, False, 0)
+        self.query_expander_container = gtk.ScrolledWindow()
+        self.query_expander_container.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        self.query_expander_view = QueryExpanderView(self)
+        self.query_expander_container.add_with_viewport(self.query_expander_view)
+        box.pack_start(self.query_expander_container, True, True, 0)
+
+        return box
 
     def get_menu_box(self):
         #menu
@@ -96,10 +134,10 @@ class GUI:
 
     def get_search_panel_layout(self):
         #prepare layout
+        self.similar_list = []
         hbox = gtk.HBox(False, 5)
         self.entry = gtk.Entry()
 
-        self.similar_list = ["Ubuntu", "Debian", "Sabayon", "Fedora", "Arch", "Mint", "Slackware", "Mandriva", "Sidux", "Mepis"]
         completion = gtk.EntryCompletion()
         self.liststore = gtk.ListStore(str)
 
