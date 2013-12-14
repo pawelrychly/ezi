@@ -11,7 +11,5 @@ import ir.webutils.Spider;
  * @author Paweł
  */
 public class PageRankSpider extends Spider {
-    public static void main(){
-        
-    }
+ 
 }
