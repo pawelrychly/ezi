@@ -34,9 +34,9 @@ public class PageRankFile {
             e[i] = alpha / nodes.length;
         }
         //System.out.print("\nR = ");
-        MoreMath.printVector(r);
+        //MoreMath.printVector(r);
         //System.out.print("\nE = ");
-        MoreMath.printVector(e);
+        //MoreMath.printVector(e);
         for (int j = 0; j < iterations; j++) {
             //System.out.println("\nIteration " + (j+1) + ":");
             for (int i = 0; i < nodes.length; i++) {
@@ -51,7 +51,7 @@ public class PageRankFile {
                 rp[i] = rp[i] + e[i];
             }
             //System.out.println("R' = ");
-            MoreMath.printVector(rp);
+            //MoreMath.printVector(rp);
             for (int i = 0; i < r.length; i++) {
                 r[i] = rp[i];
             }
@@ -77,6 +77,7 @@ public class PageRankFile {
             PrintWriter out = new PrintWriter(new FileWriter(new File(dir, "pageRanks.txt")));
             for (String key: pageRanks.keySet()) {
                 out.println(key + " " + pageRanks.get(key));
+                System.out.println("PR(" + key + ") " + pageRanks.get(key));
             }
             out.close();
         }
