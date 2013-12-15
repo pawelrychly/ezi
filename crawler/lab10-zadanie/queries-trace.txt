@@ -1,0 +1,64 @@
+run:
+Indexing documents in d:\results
+Indexed 65 documents with 527 unique terms.
+Now able to process queries. When done, enter an empty query to exit.
+
+Enter query:  Anaconda
+
+Top 10 matching Documents from most to least relevant:
+
+1.  anaconda07.html.html Score: 0.84093
+2.  anaconda03.html.html Score: 0.82852
+3.  anaconda02.html.html Score: 0.76171
+4.  anaconda04.html.html Score: 0.75027
+5.  anaconda10.html.html Score: 0.71035
+6.  anaconda12.html.html Score: 0.70317
+7.  anaconda05.html.html Score: 0.6885
+8.  anaconda09.html.html Score: 0.6873
+9.  anaconda11.html.html Score: 0.68203
+10. anaconda01.html.html Score: 0.57795
+
+Enter `m' to see more, a number to show the nth document, nothing to exit.
+
+ Enter command:  
+
+Enter query:  programming
+
+Top 10 matching Documents from most to least relevant:
+
+1.  javaprogramming07.html.html Score: 0.40478
+2.  javaprogramming04.html.html Score: 0.38224
+3.  javaprogramming03.html.html Score: 0.36795
+4.  javaprogramming08.html.html Score: 0.35093
+5.  javaprogramming02.html.html Score: 0.34111
+6.  javaprogramming05.html.html Score: 0.32842
+7.  perl06.html.html     Score: 0.31877
+8.  javaprogramming06.html.html Score: 0.27647
+9.  javaprogramming09.html.html Score: 0.25977
+10. python01.html.html   Score: 0.21035
+
+Enter `m' to see more, a number to show the nth document, nothing to exit.
+
+ Enter command:  
+
+Enter query:  python
+
+Top 10 matching Documents from most to least relevant:
+
+1.  python01.html.html   Score: 0.52529
+2.  python03.html.html   Score: 0.4679
+3.  python02.html.html   Score: 0.41481
+4.  python07.html.html   Score: 0.37832
+5.  python08.html.html   Score: 0.34291
+6.  python06.html.html   Score: 0.30869
+7.  pythonsnake01.html.html Score: 0.27369
+8.  python04.html.html   Score: 0.27278
+9.  pythonsnake07.html.html Score: 0.26235
+10. pythonsnake06.html.html Score: 0.26107
+
+Enter `m' to see more, a number to show the nth document, nothing to exit.
+
+ Enter command:  
+
+
+Enter query:  BUILD SUCCESSFUL (total time: 23 seconds)
